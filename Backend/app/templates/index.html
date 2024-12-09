@@ -65,15 +65,21 @@
         const dataForm = document.getElementById('dataForm');
         const statusContainer = document.getElementById('status-container');
         const chartsContainer = document.getElementById('charts-container');
+
         function openInNewTab(chart) {
             const newTab = window.open();
-            const htmlContent = chart
+            const htmlContent = chart;
             
             newTab.document.open();
             newTab.document.write(htmlContent);
             newTab.document.close();
         }
     
+        // Dynamically set the API URL based on the environment
+        const apiUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+            ? 'http://127.0.0.1:5000'
+            : 'https://csca5028final-weatheranalyzer-9742b62380d5.herokuapp.com/';  // Update with your actual Heroku URL
+
         dataForm.addEventListener('submit', async (event) => {
             event.preventDefault(); // Prevent form from refreshing the page
             
@@ -89,7 +95,7 @@
     
             try {
                 // Send data to backend
-                const weatherResponse = await axios.post('http://127.0.0.1:5000/api/weather', {
+                const weatherResponse = await axios.post(`${apiUrl}/api/weather`, {
                     lat: parseFloat(latitude),
                     lon: parseFloat(longitude),
                     year: parseInt(years, 10),
@@ -107,7 +113,7 @@
                 // Poll for analysis completion and fetch visualizations
                 let isDataReady = false;
                 while (!isDataReady) {
-                    const visualizationResponse = await axios.get(`http://127.0.0.1:5000/api/visualize/${weatherId}`);
+                    const visualizationResponse = await axios.get(`${apiUrl}/api/visualize/${weatherId}`);
                     
                     if (visualizationResponse.status === 200) {
                         const chart = visualizationResponse.data.charts.charts;
