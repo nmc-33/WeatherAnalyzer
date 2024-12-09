@@ -1,8 +1,8 @@
 
-from tasks import send_to_queue
-from database import save_weather_data
-from workers.fetch_data import fetch_data
-from analyzer import start_analyzer
+from .tasks import send_to_queue
+from .database import save_weather_data
+from .workers.fetch_data import fetch_data
+from .analyzer import start_analyzer
 
 def store_weather_data(lat, lon, years):
     worker = fetch_data()

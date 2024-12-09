@@ -1,8 +1,8 @@
-from tasks import start_consumer, send_to_queue
+from .tasks import start_consumer, send_to_queue
 import json
-from database import get_weather_data_by_id, save_processed_weather_data
-from workers.data_analyzer import perform_analysis
-from visualizer import start_visualizer
+from .database import get_weather_data_by_id, save_processed_weather_data
+from .workers.data_analyzer import perform_analysis
+from .visualizer import start_visualizer
 
 def analyze_callback(ch, method, properties, body):
     print('pulled from weather_queue')

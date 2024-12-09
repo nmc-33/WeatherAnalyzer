@@ -1,8 +1,8 @@
 import altair as alt
 import pandas as pd
-from tasks import start_consumer
+from .tasks import start_consumer
 import json
-from database import get_processed_weather_data_by_id, save_html_data
+from .database import get_processed_weather_data_by_id, save_html_data
 from datetime import datetime
 
 

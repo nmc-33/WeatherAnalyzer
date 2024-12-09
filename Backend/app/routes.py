@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
-from collector import store_weather_data
-from database import get_html_data_by_id
+from .collector import store_weather_data
+from .database import get_html_data_by_id
 
 
 api = Blueprint('api', __name__)
