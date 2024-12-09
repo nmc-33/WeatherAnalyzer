@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template
 from flask_cors import CORS
 from .routes import register_routes
 from .database import init_db
@@ -11,6 +11,10 @@ sentry_sdk.init(
     dsn="https://7407816f67881e03ca804de0a927b74b@o4508440094179328.ingest.us.sentry.io/4508440096079872",
 )
 app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return render_template('index.html')
 
 def start_consumers():
     # Start the first consumer
