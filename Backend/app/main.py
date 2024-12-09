@@ -5,6 +5,7 @@ from database import init_db
 from analyzer import start_analyzer
 from visualizer import start_visualizer
 import threading
+import sentry_sdk
 
 # db = SQLAlchemy()
 # migrate = Migrate()
@@ -35,6 +36,9 @@ def create_app():
     return app
 
 if __name__ == "__main__":
+    sentry_sdk.init(
+        dsn="https://7407816f67881e03ca804de0a927b74b@o4508440094179328.ingest.us.sentry.io/4508440096079872",
+    )
     start_consumers()
     app = create_app()
     app.run()
