@@ -1,0 +1,56 @@
+import unittest
+from app.collector import store_weather_data
+from app.analyzer import analyze_callback_test
+from app.database import get_weather_data_by_id, get_processed_weather_data_by_id
+from unittest.mock import patch
+
+class TestFullFlow(unittest.TestCase):
+
+    @patch('data_collector.fetch_data.fetch_weather_data')
+    @patch('data_collector.db.save_weather_data')
+    @patch('data_analyzer.db.get_weather_data_by_id')
+    @patch('data_analyzer.db.save_processed_weather_data')
+    def test_full_data_flow(self, mock_save_processed_data, mock_get_data, mock_save_data, mock_fetch_data):
+        # Mock the weather data fetch
+        mock_fetch_data.return_value = {
+            'date': '2024-12-08',
+            'datatype': 'TMIN',
+            'station': 'ST001',
+            'attributes': 'N/A',
+            'value': -5.2
+        }
+        
+        # Mock save weather data
+        mock_save_data.return_value = 1
+
+        # Mock getting weather data from the database
+        mock_get_data.return_value = {
+            'id': 1,
+            'date': '2024-12-08',
+            'datatype': 'TMIN',
+            'station': 'ST001',
+            'attributes': 'N/A',
+            'value': -5.2
+        }
+
+        # Mock save processed data
+        mock_save_processed_data.return_value = 1
+
+        # Simulate data collection
+        store_weather_data(51.5074, -0.1278)
+
+        # Simulate data analysis
+        result = analyze_callback_test(1)
+
+        # Assertions
+        processed_data = mock_save_processed_data.call_args[0][0]
+        self.assertEqual(processed_data['id'], 1)
+
+        # Retrieve and check processed data from DB
+        retrieved_data = get_processed_weather_data_by_id(1)
+        self.assertIsNotNone(retrieved_data)
+        self.assertEqual(retrieved_data['id'], 1)
+
+
+if __name__ == '__main__':
+    unittest.main()

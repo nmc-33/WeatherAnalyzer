@@ -1,0 +1,47 @@
+import unittest
+from unittest.mock import patch, MagicMock
+from app.analyzer import analyze_callback_test
+import pandas as pd
+
+class TestDataAnalyzer(unittest.TestCase):
+
+    @patch('data_analyzer.db.get_weather_data_by_id')
+    @patch('data_analyzer.db.save_processed_weather_data')
+    @patch('data_analyzer.pika.BlockingConnection')
+    def test_process_weather_data(self, mock_pika, mock_save_processed_weather_data, mock_get_weather_data_by_id):
+        # Mock the response for the get_weather_data_by_id method
+        mock_get_weather_data_by_id.return_value = {
+            "id": 1,
+            "date": "2024-12-08",
+            "datatype": "TMIN",
+            "station": "ST001",
+            "attributes": "N/A",
+            "value": -5.2
+        }
+
+        # Mock the database save method
+        mock_save_processed_weather_data.return_value = 1  # mock processed data id
+
+        # Mock pika connection
+        mock_connection = MagicMock()
+        mock_channel = MagicMock()
+        mock_pika.return_value = mock_connection
+        mock_connection.channel.return_value = mock_channel
+
+        # Process the weather data
+        result = analyze_callback_test(1)
+
+        # Assertions
+        mock_get_weather_data_by_id.assert_called_once_with(1)
+        mock_save_processed_weather_data.assert_called_once()
+        mock_channel.basic_publish.assert_called_once()
+
+        # Check the structure of the processed data
+        processed_data = mock_save_processed_weather_data.call_args[0][0]
+        self.assertIn('id', processed_data)
+        self.assertIn('years', processed_data)
+        self.assertIn('average_low', processed_data)
+
+
+if __name__ == '__main__':
+    unittest.main()

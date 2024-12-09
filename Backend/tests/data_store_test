@@ -1,0 +1,47 @@
+import unittest
+from unittest.mock import patch, MagicMock
+from app.collector import store_weather_data
+from app.tasks import send_to_queue
+import json
+
+
+class TestDataCollector(unittest.TestCase):
+
+    @patch('data_collector.fetch_data.fetch_weather_data')
+    @patch('data_collector.db.save_weather_data')
+    @patch('data_collector.pika.BlockingConnection')
+    def test_store_weather_data(self, mock_pika, mock_save_weather_data, mock_fetch_weather_data):
+        # Mock the response for the fetch_weather_data method
+        mock_fetch_weather_data.return_value = {
+            'date': '2024-12-08',
+            'datatype': 'TMIN',
+            'station': 'ST001',
+            'attributes': 'N/A',
+            'value': -5.2
+        }
+        
+        # Mock the database save method
+        mock_save_weather_data.return_value = 1  # mock weather data id
+        
+        # Mock pika connection
+        mock_connection = MagicMock()
+        mock_channel = MagicMock()
+        mock_pika.return_value = mock_connection
+        mock_connection.channel.return_value = mock_channel
+
+        # Call the function
+        store_weather_data(51.5074, -0.1278)  # Example lat, lon for London
+
+        # Assertions
+        mock_fetch_weather_data.assert_called_once_with(51.5074, -0.1278)
+        mock_save_weather_data.assert_called_once()
+        mock_channel.basic_publish.assert_called_once()
+        mock_channel.basic_publish.assert_called_with(
+            exchange='',
+            routing_key='weather_queue',
+            body=json.dumps({'weather_id': 1})
+        )
+
+
+if __name__ == '__main__':
+    unittest.main()

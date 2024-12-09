@@ -1,0 +1,47 @@
+import unittest
+from app import create_app  # Import your app creation function
+from app.database import init_db  # Import the DB initialization
+
+class TestAPI(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        """Create a new app instance before running tests"""
+        cls.app = create_app()  # Create the app using the factory function
+        cls.client = cls.app.test_client()  # Get the Flask test client
+        cls.app_context = cls.app.app_context()  # Set up the app context
+        cls.app_context.push()  # Push the app context to simulate a real environment
+
+        init_db()  # Initialize the database
+
+    @classmethod
+    def tearDownClass(cls):
+        """Clean up after tests"""
+        cls.app_context.pop()  # Pop the app context after tests
+
+    def test_get_weather_data(self):
+        """Test the '/weather/<id>' endpoint"""
+        # Simulating a GET request to fetch weather data with ID 1
+        response = self.client.get('/weather/1')
+        self.assertEqual(response.status_code, 200)  # Assert successful response
+        self.assertIn('date', response.json)  # Check that 'date' is in the response
+
+    def test_post_processed_data(self):
+        """Test the '/processed_weather_data' endpoint"""
+        data = {
+            "total_snow_yearly": 120.5,
+            "average_low": -5.2,
+            "average_high": 12.3,
+            "average_temp": 3.4,
+            "total_snow_month": 30.0,
+            "avg_snow_depth": 10.5
+        }
+        # Simulating a POST request to save processed weather data
+        response = self.client.post('/processed_weather_data', json=data)
+        self.assertEqual(response.status_code, 201)  # Assert successful creation
+        self.assertIn('id', response.json)  # Ensure the returned JSON contains 'id'
+
+    # Add more unit tests as needed
+
+if __name__ == '__main__':
+    unittest.main()

@@ -1,0 +1,56 @@
+import unittest
+from unittest.mock import patch, MagicMock
+from app.database import save_weather_data, save_processed_weather_data, get_weather_data_by_id, get_processed_weather_data_by_id
+
+class TestDatabase(unittest.TestCase):
+
+    @patch('database.Session')
+    def test_save_weather_data(self, mock_session):
+        # Mock session
+        mock_session.return_value.add = MagicMock()
+        mock_session.return_value.commit = MagicMock()
+
+        # Sample weather data to be saved
+        weather_data = {
+            'date': '2024-12-08',
+            'datatype': 'TMIN',
+            'station': 'ST001',
+            'attributes': 'N/A',
+            'value': -5.2
+        }
+
+        # Call the function
+        result = save_weather_data(weather_data)
+
+        # Assertions
+        self.assertEqual(result, 1)  # Mocked ID
+        mock_session.return_value.add.assert_called_once()
+        mock_session.return_value.commit.assert_called_once()
+
+    @patch('database.Session')
+    def test_save_processed_weather_data(self, mock_session):
+        # Mock session
+        mock_session.return_value.add = MagicMock()
+        mock_session.return_value.commit = MagicMock()
+
+        # Sample processed data
+        processed_data = {
+            "total_snow_yearly": 120.5,
+            "average_low": -5.2,
+            "average_high": 12.3,
+            "average_temp": 3.4,
+            "total_snow_month": 30.0,
+            "avg_snow_depth": 10.5
+        }
+
+        # Call the function
+        result = save_processed_weather_data(processed_data)
+
+        # Assertions
+        self.assertEqual(result, 1)  # Mocked ID
+        mock_session.return_value.add.assert_called_once()
+        mock_session.return_value.commit.assert_called_once()
+
+
+if __name__ == '__main__':
+    unittest.main()
