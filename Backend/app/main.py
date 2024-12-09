@@ -39,6 +39,5 @@ def home():
 
 port = os.environ.get('PORT', 5000)  # Default to 5000 if PORT is not set
 app.run(host='0.0.0.0', port=port)
-app.run()
     
     
