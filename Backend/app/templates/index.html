@@ -89,7 +89,7 @@
     
             try {
                 // Send data to backend
-                const weatherResponse = await axios.post('http://localhost:5000/api/weather', {
+                const weatherResponse = await axios.post('http://127.0.0.1:5000/api/weather', {
                     lat: parseFloat(latitude),
                     lon: parseFloat(longitude),
                     year: parseInt(years, 10),
@@ -107,7 +107,7 @@
                 // Poll for analysis completion and fetch visualizations
                 let isDataReady = false;
                 while (!isDataReady) {
-                    const visualizationResponse = await axios.get(`http://localhost:5000/api/visualize/${weatherId}`);
+                    const visualizationResponse = await axios.get(`http://127.0.0.1:5000/api/visualize/${weatherId}`);
                     
                     if (visualizationResponse.status === 200) {
                         const chart = visualizationResponse.data.charts.charts;

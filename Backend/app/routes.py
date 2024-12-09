@@ -46,6 +46,12 @@ def health_check():
     return jsonify({"status": "healthy"}), 200
 
 @api.route('/visualize/<int:weather_id>', methods=['GET'])
+def get_visualization(weather_id):
+    data = get_html_data_by_id(weather_id)
+    if data:
+        return jsonify({"charts": data}), 200
+    else:
+        return "", 202
 
 def register_routes(app):
     app.register_blueprint(api, url_prefix="/api")

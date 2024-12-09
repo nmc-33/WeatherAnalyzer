@@ -22,12 +22,10 @@ def start_consumers():
     # Start the second consumer
     threading.Thread(target=start_visualizer).start()
 
-
-
-if __name__ == "__main__":
-    start_consumers()
-    CORS(app)
-    init_db()
-    register_routes(app)
-    app.run()
+start_consumers()
+CORS(app, resources={r"/api/*": {"origins": "http://127.0.0.1:8000"}})
+init_db()
+register_routes(app)
+app.run()
+    
     
