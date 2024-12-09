@@ -16,9 +16,10 @@ def get_rabbitmq_connection():
     # Set up connection parameters for Pika
     connection_params = pika.ConnectionParameters(
         host=url_parts.hostname,            # Extract hostname from the URL
-        port=url_parts.port,                # Extract port from the URL
+        port=5671,                # Extract port from the URL
         virtual_host=url_parts.path[1:],    # Extract virtual host from the URL (remove the leading '/')
-        credentials=pika.PlainCredentials(url_parts.username, url_parts.password)  # Extract credentials
+        credentials=pika.PlainCredentials(url_parts.username, url_parts.password),
+        ssl = True  # Extract credentials
     )
 
     # Return the connection parameters
